@@ -1,0 +1,26 @@
+Setting up EVE-NG on VMware Workstation Player 
+
+Step 1: Go to link: https://www.vmware.com/in/products/workstation-player.html and download VMware Workstation Player, the free version (not the Pro version). You can find the "Download" link at the bottom of the page.
+Step 2: Go to link: https://www.eve-ng.net/index.php/download/ , scroll down to "Free EVE Community Edition Version", select one of the shown "EVE-NG OVF", and click to download. It must be a OVF file and not ISO. ISO image is used to customize the EVE-NG, which is not the case here. 
+Step 3: Create a folder "VMware" under C:Drive ( make sure the newly created folder is not on any OneDrive or Google Drive or any Drive that is synched, as it will start synching the VMware files to Cloud, which is not needed here. 
+Step 4: Unzip the downloaded "EVE-NG OVF" file. 
+Step 5: Install VMware Workstation Player on your computer (Windows 10).
+Step 6: Click the installed "VMware" to run the application.
+Step 7: Click on "Open a Virtual Machine" and point to "EVE-COMM-VM.ovf" (it can be found in the unzipped "EVE-NG OVG" file. 
+Step 7a: When prompted, give a name to VMware Virtual Machine "EVE-NG" (or any other name to recognize the EVE-NG in the future in VMware) and point to the newwly created folder "VMware" under C:Drive to store the VMware files. 
+Step 7b: During or after the "EVE-NG" installation, under "Settings" do the following changes, if not already done.
+Step 7c: Memory => 8GB RAM
+Step 7d: Disk => 50GB 
+Step 7e: Processor => Uncheck => 	Virtualization Engine => Virtualize Intel VT-x/EPT or AMD-V/RVI
+Step 7f: Processor => Uncheck => 	Virtualization Engine => Virtualize CPU performance counters
+Step 7g: Network Adapter: NAT
+Step 8: Cilck on "Power On"
+Step 9: Default credential for "EVE-NG" VMware terminal is "root" and "eve". At the login prompt, you will be asked to change the password of the "root". Please ensure you note this new password down for future use.
+Step 10: After successfully logging into "EVE-NG" VMware, you will notice on the top section of the Teminal window, the IP address on which "EVE-NG" can be accessed on the web browser. 
+Step 11: Go the URL mentioned, the default credential is "admin" and "eve". 
+
+Some of the Error messages that can be seen during the running of the "EVE-NG" VMware
+Error message 1: Error Message on Startup : Error while powering on: VMware Played does not support nested virtualization on this host. Module HV power on failed. Failed to start the virtual machine.
+Solution => Ensure the "Virtualize Intel VT-x/EPT or AMD-V/RVI" and "Virtualization Engine => Virtualize CPU performance counters" are UNCHECKED under "EVE-NG" VMware settings.
+Error message 2: A start job is running for Raise network interfaces 
+Solution => Ensure the Network Adapter is "NAT" and not "Bridge" or anything else
