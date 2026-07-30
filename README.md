@@ -48,6 +48,17 @@ in `install-apps.ps1` to match what you actually want.
 A walkthrough for getting EVE-NG running as a VM under VMware Workstation, including
 the disk and networking settings that are easy to get wrong the first time.
 
+## Reporting issues
+
+Found a bug, a mistake in the documentation, or want to suggest something?
+**[Open an issue](https://github.com/t-philip/scripts/issues/new/choose)** — pick a
+template and it will ask for the details that actually help.
+
+This repository holds several unrelated tools, so please say which script or
+guide you mean — the template asks. These were written for one setup and
+generalised afterwards, so environment details are usually the key to
+reproducing anything.
+
 ---
 
 Built and maintained by [t-philip](https://github.com/t-philip).

@@ -1,0 +1,19 @@
+name: Question or idea
+description: Help adapting a script, or a suggestion
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Adapting these to your own setup is the expected use — most of them have a
+        handful of values near the top meant to be changed (gateway IP, log path,
+        service name). Say what you're trying to achieve and it's easier to point
+        you at the right line.
+
+  - type: textarea
+    id: body
+    attributes:
+      label: What would you like to know?
+    validations:
+      required: true
