@@ -104,9 +104,10 @@ not attempt.
 
 [docs/DESIGN_SPEC.md](docs/DESIGN_SPEC.md) explains why each tool works the way it
 does, one section per tool since they're unrelated, plus an honest verification status
-for each — most of this collection was reasoned about and checked by hand rather than
-run end-to-end, since there's no live Ubuntu host, Windows fresh-install, or VMware
-instance available to test against from the machine that wrote it.
+for each. Ping Monitor's non-root setup was live-tested end to end on a real systemd
+host; the rest was reasoned about and checked by hand, since there's no Windows
+fresh-install or VMware instance available to test those against from the machine
+that wrote it.
 
 ---
 

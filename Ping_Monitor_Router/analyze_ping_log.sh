@@ -6,7 +6,7 @@
 # Version  : 1.0
 # =============================================================================
 
-LOG_FILE="${1:-$HOME/ping_monitor/ping_monitor.log}"
+LOG_FILE="${1:-/var/log/ping_monitor/ping_monitor.log}"
 
 if [[ ! -f "$LOG_FILE" ]]; then
     echo "ERROR: Log file not found: $LOG_FILE"

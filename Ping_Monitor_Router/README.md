@@ -24,7 +24,8 @@ Originally built to monitor a home router over a 10-day period and detect unexpe
 - Ubuntu 22.04 LTS or 24.04 LTS (bare metal, VM, or LXC container)
 - systemd
 - `ping` (pre-installed on Ubuntu: `/usr/bin/ping`)
-- Root access
+- Root access **for initial setup only** — the service itself runs as a dedicated
+  non-root user once installed (see Setup)
 
 ---
 
@@ -39,7 +40,7 @@ Before setting up, decide on your values for the following parameters. These are
 | `WAN_TARGET_2` | `1.1.1.1` | Second WAN ping target (Cloudflare DNS) |
 | `PING_INTERVAL` | `30` | Seconds between each ping cycle |
 | `FAILURE_THRESHOLD` | `3` | Consecutive failures before logging an outage |
-| `LOG_DIR` | `$HOME/ping_monitor` | Directory where the log file is written |
+| `LOG_DIR` | `/var/log/ping_monitor` | Directory where the log file is written |
 
 > **Tip:** A `PING_INTERVAL` of 30 seconds and a `FAILURE_THRESHOLD` of 3 means an outage is confirmed in ~90 seconds — sufficient to catch most router reboots which typically take 60–120 seconds. If you want more or less sensitivity, adjust these two values accordingly.
 
@@ -47,15 +48,29 @@ Before setting up, decide on your values for the following parameters. These are
 
 ## Setup
 
-### Step 1 — Create the working directory
+The monitor runs as a **dedicated non-root system user** — pinging a target needs
+either root or the `CAP_NET_RAW` capability, and on any modern Ubuntu/Debian system
+`ping` already carries that capability by default (verified: an ordinary unprivileged
+user can run it with no extra setup). Root is only needed for the one-time install
+steps below (creating the user, writing to `/etc/systemd/system/`), never for the
+running service.
+
+### Step 1 — Create the service user and directories
 
 ```bash
-mkdir -p ~/ping_monitor
+useradd --system --no-create-home --shell /usr/sbin/nologin pingmon
+mkdir -p /opt/ping_monitor /var/log/ping_monitor
+chown pingmon:pingmon /var/log/ping_monitor
 ```
+
+`/opt/ping_monitor` holds the scripts (root-owned is fine — `pingmon` only needs to
+*read and execute* them, not write to them). `/var/log/ping_monitor` holds the log and
+must be owned by `pingmon`, since that's the only thing the running service actually
+writes to.
 
 ### Step 2 — Copy the scripts
 
-Place the following three files into `~/ping_monitor/`:
+Place the following three files into `/opt/ping_monitor/`:
 - `ping_monitor.sh`
 - `ping_monitor.service`
 - `analyze_ping_log.sh`
@@ -65,7 +80,7 @@ Place the following three files into `~/ping_monitor/`:
 Open `ping_monitor.sh` and set your router's LAN IP and any other parameters:
 
 ```bash
-nano ~/ping_monitor/ping_monitor.sh
+nano /opt/ping_monitor/ping_monitor.sh
 ```
 
 Update the configuration block at the top:
@@ -83,8 +98,8 @@ Save with `Ctrl+X` → `Y` → `Enter`.
 ### Step 4 — Make scripts executable
 
 ```bash
-chmod +x ~/ping_monitor/ping_monitor.sh
-chmod +x ~/ping_monitor/analyze_ping_log.sh
+chmod +x /opt/ping_monitor/ping_monitor.sh
+chmod +x /opt/ping_monitor/analyze_ping_log.sh
 ```
 
 ### Step 5 — Set the correct timezone
@@ -104,7 +119,7 @@ timedatectl
 ### Step 6 — Install the systemd service
 
 ```bash
-cp ~/ping_monitor/ping_monitor.service /etc/systemd/system/
+cp /opt/ping_monitor/ping_monitor.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable ping_monitor
 systemctl start ping_monitor
@@ -123,14 +138,17 @@ Expected output:
      Active: active (running) since ...
    Main PID: 944 (bash)
      CGroup: ...
-             |-944 bash /root/ping_monitor/ping_monitor.sh
+             |-944 bash /opt/ping_monitor/ping_monitor.sh
              `-953 sleep 30
 ```
+
+`ps -o user= -p 944` (or check `systemctl status`'s own output) should show `pingmon`,
+not `root`.
 
 ### Step 8 — Verify the log file
 
 ```bash
-cat ~/ping_monitor/ping_monitor.log
+cat /var/log/ping_monitor/ping_monitor.log
 ```
 
 Expected output:
@@ -146,7 +164,7 @@ timestamp,event,target_type,target_ip,duration_min,probable_restart
 ### Watch the log in real time
 
 ```bash
-tail -f ~/ping_monitor/ping_monitor.log
+tail -f /var/log/ping_monitor/ping_monitor.log
 ```
 
 Press `Ctrl+C` to exit.
@@ -203,7 +221,7 @@ timestamp,event,target_type,target_ip,duration_min,probable_restart
 Run the analyser at any point — mid-monitoring or at the end of your monitoring period:
 
 ```bash
-bash ~/ping_monitor/analyze_ping_log.sh
+bash /opt/ping_monitor/analyze_ping_log.sh
 ```
 
 Sample report output:
@@ -211,7 +229,7 @@ Sample report output:
 ```
 ============================================================
   Ping Monitor Report
-  Log file : /root/ping_monitor/ping_monitor.log
+  Log file : /var/log/ping_monitor/ping_monitor.log
   From     : 2026-01-15 22:04:21
   To       : 2026-05-15 23:59:59
 ============================================================
@@ -247,7 +265,7 @@ systemctl disable ping_monitor
 Then run the final analysis:
 
 ```bash
-bash ~/ping_monitor/analyze_ping_log.sh
+bash /opt/ping_monitor/analyze_ping_log.sh
 ```
 
 ---
@@ -287,10 +305,15 @@ Then set a root password if not already done:
 passwd root
 ```
 
-**Ping permission denied:**
+**`pingmon` gets "Permission denied" running ping:**
+Modern Ubuntu/Debian ships `ping` with `CAP_NET_RAW` already set, so this normally
+isn't needed — check first with `sudo -u pingmon ping -c 1 8.8.8.8`. If it does fail:
 ```bash
 setcap cap_net_raw+ep /usr/bin/ping
 ```
+This grants the capability to the `ping` binary itself, so it isn't scoped to
+`pingmon` alone — any user on the box gains it too, which is the standard trade-off
+for this fix and is normally accepted, since `ping` is meant to be runnable by anyone.
 
 **LAN ping always failing on LXC container:**
 Check that the container's network bridge in Proxmox is on the same VLAN/subnet as your router. In the Proxmox web UI: CT → Network tab → confirm the bridge assignment.
@@ -310,8 +333,8 @@ If either fails, there is a network connectivity issue between the Ubuntu host a
 |---|---|
 | Check service status | `systemctl status ping_monitor` |
 | Quick active check | `systemctl is-active ping_monitor` |
-| Watch live log | `tail -f ~/ping_monitor/ping_monitor.log` |
-| Run analysis | `bash ~/ping_monitor/analyze_ping_log.sh` |
+| Watch live log | `tail -f /var/log/ping_monitor/ping_monitor.log` |
+| Run analysis | `bash /opt/ping_monitor/analyze_ping_log.sh` |
 | Restart service | `systemctl restart ping_monitor` |
 | Stop monitor | `systemctl stop ping_monitor` |
 | View service errors | `journalctl -u ping_monitor -n 50` |
