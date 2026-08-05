@@ -2,7 +2,7 @@
 
 Configuration guides and setup references for networking tools and platforms.
 
-**Author:** t-philip | Part of the [t-philip/public](https://github.com/t-philip/public) open source collection.
+**Author:** t-philip
 
 ---
 

@@ -1,4 +1,3 @@
-cat > ~/ping_monitor/ping_monitor.service << 'EOF'
 [Unit]
 Description=Wi-Fi Mesh Router Ping Monitor
 After=network-online.target
@@ -15,4 +14,3 @@ StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
-EOF

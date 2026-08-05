@@ -261,6 +261,11 @@ journalctl -u ping_monitor -n 50
 
 **SSH password authentication not working (Ubuntu 24.04):**
 
+> **Security note:** the settings below widen SSH access — root login and password
+> auth are both disabled by default on a fresh Ubuntu install for good reason. Only
+> enable them if you understand the trade-off, and prefer reverting to key-based,
+> non-root SSH once the box is set up rather than leaving this in place permanently.
+
 Edit the SSH config:
 ```bash
 nano /etc/ssh/sshd_config
@@ -321,12 +326,4 @@ If either fails, there is a network connectivity issue between the Ubuntu host a
 
 ## Licence
 
-MIT License
-
-Copyright (c) 2026 t-philip
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+GPL-3.0, same as the rest of this repository — see [LICENSE](../LICENSE).

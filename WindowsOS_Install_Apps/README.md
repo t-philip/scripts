@@ -1,6 +1,6 @@
 # Windows OS — Fresh Setup Scripts
 
-**Author:** t-philip | Part of the [t-philip/public](https://github.com/t-philip/public) open source collection.
+**Author:** t-philip
 
 Scripts for setting up a new or freshly reset Windows 11 machine. Installs a curated set of applications via **winget** and guides you through anything that requires manual installation.
 
