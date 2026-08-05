@@ -1,6 +1,6 @@
+#!/usr/bin/env bash
 # =============================================================================
 # ping_monitor.sh — Router Restart Monitor
-#!/usr/bin/env bash
 # Platform : Ubuntu 24.04 LTS (container or VM on any Linux host)
 # Author   : t-philip / Claude
 # Version  : 1.0
@@ -12,7 +12,9 @@ WAN_TARGET_1="8.8.8.8"
 WAN_TARGET_2="1.1.1.1"
 PING_INTERVAL=30
 FAILURE_THRESHOLD=3
-LOG_DIR="$HOME/ping_monitor"
+# Fixed path, not $HOME -- this runs as a dedicated non-root service user with no
+# home directory (see ping_monitor.service and the README's Setup section).
+LOG_DIR="/var/log/ping_monitor"
 LOG_FILE="$LOG_DIR/ping_monitor.log"
 # -----------------------------------------------------------------------------
 

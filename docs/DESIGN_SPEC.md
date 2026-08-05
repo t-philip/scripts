@@ -4,8 +4,9 @@
 **Author:** T. Philip — <https://github.com/t-philip>
 **Date:** 5 August 2026
 **Status:** Reconciled against the shipped content. Describes each tool as it actually
-works, including three real defects found while writing this document and fixed
-before this spec's first release.
+works, including five real defects found while writing this document and fixed
+before this spec's first release — two of them (§7.1, §7.5) only surfaced under live
+testing on a real systemd host, not from reading the code.
 **Licence:** GPL-3.0, same as the code (see §7 for the one folder this took fixing to
 make true).
 
@@ -65,14 +66,14 @@ both did simultaneously.
 
 ### 1.3 Security model
 
-Runs as `User=root` in the systemd unit. Ping requires either root or the
-`CAP_NET_RAW` capability; the README's own troubleshooting section documents the
-capability-based alternative (`setcap cap_net_raw+ep /usr/bin/ping`) for the "permission
-denied" case, which means the tool **could** run under a dedicated non-root user with
-that capability granted, rather than needing full root for a script whose only actions
-are pinging and appending to a log file.
-
-**Not changed in this pass** — see §7.3 for why, and §8 for what a fix would look like.
+Runs as a **dedicated non-root system user** (`pingmon`, created during Setup), not
+root. Ping requires either root or the `CAP_NET_RAW` capability; on a modern
+Ubuntu/Debian system `ping` already carries that capability as a file capability
+(confirmed live — see §1.4), so an ordinary unprivileged user can call it with no
+extra grant. The README's troubleshooting section covers the fallback
+(`setcap cap_net_raw+ep /usr/bin/ping`) for the rarer case where it's missing. Root
+is needed only for the one-time install steps (creating the user, writing to
+`/etc/systemd/system/`), never for the running service.
 
 ### 1.4 Verification status — stated honestly
 
@@ -83,13 +84,29 @@ it and check the log," not a passing test suite. What is actually known:
   threshold, `OUTAGE_START`/`OUTAGE_END`/`DAILY_SUMMARY` events, `probable_restart`
   flagging) has run against the author's own home network and produced the CSV format
   shown in the README's sample output.
-- **The fix in §7.1 (the broken `.service` file) has not been re-verified against a live
-  `systemctl` install** from the machine that wrote this document — there is no Ubuntu
-  host here to install it on. It is correct by inspection: the file now contains exactly
-  the `[Unit]`/`[Service]`/`[Install]` sections a `cp` into `/etc/systemd/system/` expects,
-  with no shell syntax remaining. Recommended before trusting it: `systemd-analyze verify
-  ping_monitor.service` on a real Ubuntu host, or simply installing it and confirming
-  `systemctl status` shows it loaded and active.
+- **The §7.1 and §7.5 fixes (the broken `.service` file, and running as a non-root
+  `pingmon` user) were live-verified end to end**, not just reasoned about — the
+  machine that wrote this document has no Ubuntu host of its own, but a spare Linux
+  test box was available (Debian 12/DietPi, arm64 — not literally Ubuntu, but the same
+  systemd/capability mechanics) does. On it: `useradd --system --no-create-home` a
+  scratch user with zero extra grants, confirmed it could `ping` both a LAN and a WAN
+  target immediately (this host's `ping` already carries `CAP_NET_RAW` as a file
+  capability by default, and `net.ipv4.ping_group_range` is fully open — neither
+  needed changing). Then installed the **actual, real** `ping_monitor.sh`,
+  `ping_monitor.service` and `analyze_ping_log.sh` following the README's Setup steps
+  exactly (`useradd`, `mkdir`/`chown`, `cp` into `/opt/ping_monitor`, install the unit)
+  and started the real service. First attempt failed —
+  `systemctl status` reported `203/EXEC`. That surfaced §7.5 (below): the shebang
+  wasn't on line 1. Fixed, redeployed, and the service came up correctly —
+  `systemctl status` showed `pingmon`, not `root`, as the running user, and
+  `MONITOR_START` landed in `/var/log/ping_monitor/ping_monitor.log` with correct
+  ownership (`pingmon:pingmon`). All test artifacts (user, unit file, directories)
+  were removed afterward — verified gone, zero trace left on the host.
+- **Not exercised in that test:** a full outage cycle (`OUTAGE_START`/`OUTAGE_END`,
+  the 3-failure threshold, `DAILY_SUMMARY`) — the run was long enough to confirm
+  `MONITOR_START` and normal operation under the new user, not long enough to force
+  an actual outage. That logic is unchanged by this fix and was already covered by
+  §1.4's first point above.
 - **`analyze_ping_log.sh`'s CSV parsing** was traced by hand against the exact sample log
   format in the README and handles the documented event types (`MONITOR_START`,
   `OUTAGE_START`, `OUTAGE_END`, `DAILY_SUMMARY`) correctly, but was not run against a
@@ -218,7 +235,7 @@ to verify against.
 
 Every tool in this repository is published under GPL-3.0 (see [LICENSE](../LICENSE)),
 confirmed at the repository root and in this repo's main README. One folder's own
-sub-README disagreed with that — see §7.2.
+sub-README disagreed with that — see §7.3.
 
 ---
 
@@ -239,9 +256,10 @@ No other divergence found.
 
 ## 7. Gaps found while writing this document — and fixed
 
-Three real defects, found across three of the four tools while writing this
-specification. All three are fixed, in both this public repository and the private
-source repository they were carried in from.
+Five real defects, found across three of the four tools while writing this
+specification (two of them — §7.1 and §7.5 — only surfaced once the fix was actually
+tested live, not from reading the code). All five are fixed, in both this public
+repository and the private source repository they were carried in from.
 
 ### 7.1 Ping Monitor's systemd unit file was not a systemd unit file — **fixed**
 
@@ -257,9 +275,8 @@ monitor unattended.
 **Fix.** Stripped to plain unit-file content — the same content the heredoc would have
 written, minus the wrapper. `cp` now installs a working unit.
 
-*Verified:* by inspection against standard systemd unit syntax (three sections, no shell
-syntax remaining). Not re-verified against a live `systemctl` install — no Ubuntu host
-available in this session; see §1.4.
+*Verified:* live, on a real systemd host — see §1.4. `systemctl status` showed the
+service loaded and active, not just parseable.
 
 ### 7.2 `formatted_print.py`'s own usage example had a typo in its own filename — **fixed**
 
@@ -298,21 +315,42 @@ included) during that restructuring. The line was simply never updated in either
 afterward. Removed rather than reworded, since both files already live inside the correct
 repository and a self-referential link back to it added nothing.
 
+### 7.5 Ping Monitor now runs as a dedicated non-root user, not root — **fixed and live-verified**
+
+§1.3 (original text) flagged this as a real gap: `User=root` in the systemd unit when
+`CAP_NET_RAW` alone would suffice for ping. Fixing it required changing `LOG_DIR` off
+`$HOME` (a `--no-create-home` system user has none), moving the script location out
+of `/root`, and rewriting the Setup section's walkthrough — a real design change, not
+a one-line tweak, so it was deliberately held back from the first release pending
+somewhere to actually test it.
+
+**Fix.** `ping_monitor.service` now runs `User=pingmon`; `LOG_DIR` defaults to
+`/var/log/ping_monitor`; `ExecStart` points at `/opt/ping_monitor/ping_monitor.sh`.
+The README's Setup section now opens with creating the user and directories
+(`useradd --system --no-create-home`, `chown` the log directory) before anything else.
+
+**A second, more serious defect surfaced only by testing this live, not by reading
+the code:** `ping_monitor.sh`'s shebang was on **line 3**, preceded by two `#`
+comment lines. `execve()` requires `#!` to be the literal first two bytes of a file —
+it was not, so systemd's `ExecStart` (which execs the path directly, no shell
+wrapper) failed with `203/EXEC`. This is not a regression introduced by the
+`User=pingmon` change — it would have broken the **original `User=root` install the
+exact same way**, for the exact same reason, and had simply never been caught because
+nothing had installed this exact file via a real `systemctl start` before. Fixed by
+moving the shebang to line 1.
+
+*Verified live* on a spare Linux test box, with the real files, per
+§1.4 — including catching and fixing the shebang defect via the actual failure it
+caused (`203/EXEC`), not by inspection. All test artifacts removed afterward.
+
 ---
 
 ## 8. Possible future work
 
-1. **§1.3** — run Ping Monitor's daemon under a dedicated non-root user with
-   `AmbientCapabilities=CAP_NET_RAW` rather than `User=root`, matching the
-   already-documented capability-based fix for the "permission denied" ping case. Not
-   done in this pass because it also touches `LOG_DIR`'s `$HOME`-relative path (currently
-   `/root/ping_monitor` under the shipped unit) and the setup steps that assume root
-   throughout — a real design change, not a one-line fix, and there is no Ubuntu host
-   here to verify a change to the running-user model against.
-2. **§7.1** — install the corrected unit file on a real Ubuntu host and confirm
-   `systemctl status ping_monitor` shows it loaded and active; run
-   `systemd-analyze verify` for good measure.
-3. **§4.2** — `formatted_print.py` predates the rest of this collection by several
+1. **§7.1** — run `systemd-analyze verify` against the corrected unit file on an
+   actual Ubuntu host (verification so far used a Debian/DietPi sandbox — same
+   systemd mechanics, but not the literally-documented platform).
+2. **§4.2** — `formatted_print.py` predates the rest of this collection by several
    years; if it's touched again, it's a reasonable candidate for a light modernisation
    pass (type hints, an f-string-based implementation) rather than only ever receiving
    typo fixes.
