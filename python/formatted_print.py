@@ -13,7 +13,7 @@ Location           : Europe
 # Pre-requisite : Python 3.6+
 
 # STEPS
-# Step 1  : Import => from fomatted_print import pretty_print
+# Step 1  : Import => from formatted_print import pretty_print
 # Step 2  : Declare the variable => print_input = []
 # Step 3  : Append the "Description" and "Value" to print_input[]
 # Step 3a : print_input.append((<Description>, <Value>))
