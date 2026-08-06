@@ -7,8 +7,8 @@
 works, including five real defects found while writing this document and fixed
 before this spec's first release — two of them (§7.1, §7.5) only surfaced under live
 testing on a real systemd host, not from reading the code.
-**Licence:** GPL-3.0, same as the code (see §7 for the one folder this took fixing to
-make true).
+**Licence:** AGPL-3.0, same as the code (see §7 for the one folder this took fixing to
+make true). Relicensed from GPL-3.0 on 2026-08-06 — see §9.
 
 ---
 
@@ -233,7 +233,7 @@ to verify against.
 
 ## 5. Licensing note — the whole point of §7 below
 
-Every tool in this repository is published under GPL-3.0 (see [LICENSE](../LICENSE)),
+Every tool in this repository is published under AGPL-3.0 (see [LICENSE](../LICENSE)),
 confirmed at the repository root and in this repo's main README. One folder's own
 sub-README disagreed with that — see §7.3.
 
@@ -289,20 +289,22 @@ module that does exist, under a name that is one letter off from what's actually
 *Verified:* the corrected string was checked against the real filename; `py -m
 py_compile` confirmed no syntax error was introduced.
 
-### 7.3 Ping Monitor's own README carried an MIT licence block, contradicting the repository's GPL-3.0 — **fixed**
+### 7.3 Ping Monitor's own README carried an MIT licence block, contradicting the repository's declared licence — **fixed**
 
-The root `LICENSE` file and the repository's main `README.md` both state GPL-3.0. The
-`Ping_Monitor_Router/README.md` sub-page, unrelated to that relicensing pass, still
-carried a full embedded MIT License block at its own bottom — a real, findable
-inconsistency that a reader landing on that page specifically (rather than the repo
-root) would have taken at face value.
+The root `LICENSE` file and the repository's main `README.md` both stated GPL-3.0, which
+was the repository's licence at the time. The `Ping_Monitor_Router/README.md` sub-page,
+unrelated to that relicensing pass, still carried a full embedded MIT License block at
+its own bottom — a real, findable inconsistency that a reader landing on that page
+specifically (rather than the repo root) would have taken at face value.
 
-**Fix.** Replaced with a one-line pointer to the actual, correct licence:
-"GPL-3.0, same as the rest of this repository — see LICENSE." The same stale block was
-also found and removed from the private source repository this content is maintained
-in, so it can't regenerate here on a future sync.
+**Fix.** Replaced with a one-line pointer to the actual, correct licence rather than a
+second copy of the licence text. That pointer now reads "AGPL-3.0, same as the rest of
+this repository — see LICENSE", having been carried through the 2026-08-06 relicensing
+described in §9 — which is precisely the property the fix was made for. The same stale
+block was also found and removed from the private source repository this content is
+maintained in, so it can't regenerate here on a future sync.
 
-*Verified:* by inspection — the repository now states GPL-3.0 in exactly one place
+*Verified:* by inspection — the repository states its licence in exactly one place
 (root `LICENSE`) and every page that mentions licensing points to it rather than
 repeating (and risking re-diverging from) the text.
 
@@ -359,7 +361,14 @@ caused (`203/EXEC`), not by inspection. All test artifacts removed afterward.
 
 ## 9. Licence and provenance
 
-Published under **GPL-3.0** alongside the code it describes.
+Published under **AGPL-3.0** alongside the code it describes.
+
+**Licence history.** This repository was published under GPL-3.0 until 2026-08-06, when
+it was relicensed to AGPL-3.0. The change adds §13 (Remote Network Interaction): anyone
+who modifies this code and makes it available to users over a network must offer those
+users the corresponding source. Copyright is held solely by T. Philip, so the change was
+made without third-party consent. Note that releases already published under GPL-3.0
+remain available under GPL-3.0 to anyone who received them — that grant is not revocable.
 
 Written and maintained by **T. Philip** — <https://github.com/t-philip>.
 Repository: <https://github.com/t-philip/scripts>.

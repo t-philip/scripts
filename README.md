@@ -4,7 +4,9 @@ A small collection of automation scripts and setup guides I built for my own use
 and cleaned up enough to share. Everything here is self-contained — pick the one
 folder you need and ignore the rest.
 
-Licensed under [GPL-3.0](LICENSE). Please credit **t-philip** if you use or share these.
+Licensed under [AGPL-3.0](LICENSE). Please credit **t-philip** if you use or share these.
+If you modify any of these tools and make them available to others over a network, you
+must offer those users the source of your modified version.
 
 ---
 
