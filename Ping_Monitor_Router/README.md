@@ -349,4 +349,4 @@ If either fails, there is a network connectivity issue between the Ubuntu host a
 
 ## Licence
 
-GPL-3.0, same as the rest of this repository — see [LICENSE](../LICENSE).
+AGPL-3.0, same as the rest of this repository — see [LICENSE](../LICENSE).
