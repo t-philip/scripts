@@ -154,7 +154,7 @@ cat /var/log/ping_monitor/ping_monitor.log
 Expected output:
 ```
 timestamp,event,target_type,target_ip,duration_min,probable_restart
-2026-01-15 22:04:21,MONITOR_START,,,,ubuntu-server
+1998-01-15 22:04:21,MONITOR_START,,,,ubuntu-server
 ```
 
 ---
@@ -206,12 +206,12 @@ The log file is CSV with the following columns:
 
 ```
 timestamp,event,target_type,target_ip,duration_min,probable_restart
-2026-01-15 22:04:21,MONITOR_START,,,,ubuntu-server
-2026-01-15 22:32:00,OUTAGE_START,LAN,192.168.1.1,,
-2026-01-15 22:34:00,OUTAGE_END,LAN,192.168.1.1,2,yes
-2026-01-16 02:11:00,OUTAGE_START,WAN,8.8.8.8+1.1.1.1,,
-2026-01-16 02:14:00,OUTAGE_END,WAN,8.8.8.8+1.1.1.1,3,no
-2026-01-15 23:59:59,DAILY_SUMMARY,,,5,
+1998-01-15 22:04:21,MONITOR_START,,,,ubuntu-server
+1998-01-15 22:32:00,OUTAGE_START,LAN,192.168.1.1,,
+1998-01-15 22:34:00,OUTAGE_END,LAN,192.168.1.1,2,yes
+1998-01-16 02:11:00,OUTAGE_START,WAN,8.8.8.8+1.1.1.1,,
+1998-01-16 02:14:00,OUTAGE_END,WAN,8.8.8.8+1.1.1.1,3,no
+1998-01-15 23:59:59,DAILY_SUMMARY,,,5,
 ```
 
 ---
@@ -230,7 +230,7 @@ Sample report output:
 ============================================================
   Ping Monitor Report
   Log file : /var/log/ping_monitor/ping_monitor.log
-  From     : 2026-01-15 22:04:21
+  From     : 1998-01-15 22:04:21
   To       : 2026-05-15 23:59:59
 ============================================================
 
@@ -242,8 +242,8 @@ Sample report output:
   Longest outage            : 2026-05-08 03:14:00 | LAN | 8 min ← probable restart
 
   Outage detail:
-  #1  2026-01-15 22:32:00  LAN  Duration: 2 min  ← probable restart
-  #2  2026-01-16 02:11:00  WAN  Duration: 3 min
+  #1  1998-01-15 22:32:00  LAN  Duration: 2 min  ← probable restart
+  #2  1998-01-16 02:11:00  WAN  Duration: 3 min
   ...
 
 ============================================================
