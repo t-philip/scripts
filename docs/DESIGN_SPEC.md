@@ -23,8 +23,7 @@ been verified for each one.
 Unlike this profile's other public repos, `scripts` is **not one project** — it's four
 independent tools that happen to share a licence and a support process. That shape
 itself needs explaining once: each was extracted from a single earlier `public` monorepo
-during the 2026-07-30 restructuring (tracked as PR-040 in the author's private project
-register) and kept together here because none was substantial enough to justify its own
+when the repositories were split up, and kept together here because none was substantial enough to justify its own
 repo, not because they relate to each other. Consequently this document has **one section
 per tool** rather than one architecture describing the whole repo — there isn't a whole
 to describe.
