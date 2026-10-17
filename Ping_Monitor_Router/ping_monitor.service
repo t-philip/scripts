@@ -1,5 +1,5 @@
 [Unit]
-Description=Wi-Fi Mesh Router Ping Monitor
+Description=Router Restart Monitor
 After=network-online.target
 Wants=network-online.target
 

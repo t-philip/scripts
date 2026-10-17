@@ -49,7 +49,7 @@ $apps = @(
     # Entertainment
     @{ Id = "Spotify.Spotify"; Name = "Spotify"; Source = "winget" }
 
-    # Medical - uncomment below to install when needed
+    # Optional - uncomment below to install when needed
     # @{ Id = "MicroDicom.MicroDicomViewer";  Name = "MicroDicom" }
 
 )

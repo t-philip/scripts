@@ -2,7 +2,7 @@
 
 A lightweight Bash-based network monitor that detects router restarts by tracking ping failures to LAN and WAN targets. Runs as a systemd service on Ubuntu, logs events in CSV format, and includes a separate analysis script for a clean post-monitoring report.
 
-Originally built to monitor a home router over a 10-day period and detect unexpected restarts.
+Detects unexpected router restarts and tells them apart from ISP outages.
 
 ---
 
@@ -105,7 +105,7 @@ chmod +x /opt/ping_monitor/analyze_ping_log.sh
 ### Step 5 — Set the correct timezone
 
 ```bash
-timedatectl set-timezone Europe/Amsterdam    # ← replace with your timezone
+timedatectl set-timezone UTC    # ← replace with your timezone
 ```
 
 Verify:
@@ -231,7 +231,7 @@ Sample report output:
   Ping Monitor Report
   Log file : /var/log/ping_monitor/ping_monitor.log
   From     : 1998-01-15 22:04:21
-  To       : 2026-05-15 23:59:59
+  To       : 1998-01-25 23:59:59
 ============================================================
 
   Total outages detected    : 7
@@ -239,7 +239,7 @@ Sample report output:
   WAN-only outages          : 2
   Total downtime            : 24 min
 
-  Longest outage            : 2026-05-08 03:14:00 | LAN | 8 min ← probable restart
+  Longest outage            : 1998-01-20 03:14:00 | LAN | 8 min ← probable restart
 
   Outage detail:
   #1  1998-01-15 22:32:00  LAN  Duration: 2 min  ← probable restart
@@ -316,7 +316,7 @@ This grants the capability to the `ping` binary itself, so it isn't scoped to
 for this fix and is normally accepted, since `ping` is meant to be runnable by anyone.
 
 **LAN ping always failing on LXC container:**
-Check that the container's network bridge in Proxmox is on the same VLAN/subnet as your router. In the Proxmox web UI: CT → Network tab → confirm the bridge assignment.
+If running in a container or VM, make sure its virtual network bridge is on the same subnet as your router.
 
 **Service running but log not growing:**
 ```bash

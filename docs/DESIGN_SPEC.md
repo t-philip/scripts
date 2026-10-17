@@ -55,7 +55,7 @@ both did simultaneously.
   this trades off against detection speed — a real router reboot (60–120s typical) is
   still caught.
 - **CSV output, not a database or JSON log.** The stated purpose is opening it directly
-  in Excel or Google Sheets for a 10-day monitoring exercise — there is no query
+  in Excel or Google Sheets for multi-day monitoring — there is no query
   interface to build, so a database would be unjustified complexity for the actual use
   case.
 - **A separate analyser script (`analyze_ping_log.sh`) rather than analysis built into
@@ -81,13 +81,9 @@ it and check the log," not a passing test suite. What is actually known:
 
 - **The core outage-detection logic** (dual-WAN-target confirmation, the 3-failure
   threshold, `OUTAGE_START`/`OUTAGE_END`/`DAILY_SUMMARY` events, `probable_restart`
-  flagging) has run against the author's own home network and produced the CSV format
-  shown in the README's sample output.
+  flagging) has been exercised on a live network and produces the CSV format shown in the README's sample output.
 - **The §7.1 and §7.5 fixes (the broken `.service` file, and running as a non-root
-  `pingmon` user) were live-verified end to end**, not just reasoned about — the
-  machine that wrote this document has no Ubuntu host of its own, but a spare Linux
-  test box was available (Debian 12/DietPi, arm64 — not literally Ubuntu, but the same
-  systemd/capability mechanics) does. On it: `useradd --system --no-create-home` a
+  `pingmon` user) were live-verified end to end**, not just reasoned about — they were run on a Debian 12 (arm64) systemd host — not literally Ubuntu, but the same systemd/capability mechanics. On it: `useradd --system --no-create-home` a
   scratch user with zero extra grants, confirmed it could `ping` both a LAN and a WAN
   target immediately (this host's `ping` already carries `CAP_NET_RAW` as a file
   capability by default, and `net.ipv4.ping_group_range` is fully open — neither
@@ -258,7 +254,7 @@ No other divergence found.
 Five real defects, found across three of the four tools while writing this
 specification (two of them — §7.1 and §7.5 — only surfaced once the fix was actually
 tested live, not from reading the code). All five are fixed, in both this public
-repository and the private source repository they were carried in from.
+repository.
 
 ### 7.1 Ping Monitor's systemd unit file was not a systemd unit file — **fixed**
 
@@ -300,8 +296,7 @@ specifically (rather than the repo root) would have taken at face value.
 second copy of the licence text. That pointer now reads "AGPL-3.0, same as the rest of
 this repository — see LICENSE", having been carried through the 2026-08-06 relicensing
 described in §9 — which is precisely the property the fix was made for. The same stale
-block was also found and removed from the private source repository this content is
-maintained in, so it can't regenerate here on a future sync.
+block was also found and removed, so it can't regenerate here on a future sync.
 
 *Verified:* by inspection — the repository states its licence in exactly one place
 (root `LICENSE`) and every page that mentions licensing points to it rather than
@@ -340,7 +335,7 @@ exact same way**, for the exact same reason, and had simply never been caught be
 nothing had installed this exact file via a real `systemctl start` before. Fixed by
 moving the shebang to line 1.
 
-*Verified live* on a spare Linux test box, with the real files, per
+*Verified live* on a Debian 12 (arm64) host, with the real files, per
 §1.4 — including catching and fixing the shebang defect via the actual failure it
 caused (`203/EXEC`), not by inspection. All test artifacts removed afterward.
 
@@ -349,7 +344,7 @@ caused (`203/EXEC`), not by inspection. All test artifacts removed afterward.
 ## 8. Possible future work
 
 1. **§7.1** — run `systemd-analyze verify` against the corrected unit file on an
-   actual Ubuntu host (verification so far used a Debian/DietPi sandbox — same
+   actual Ubuntu host (verification so far used a Debian host — same
    systemd mechanics, but not the literally-documented platform).
 2. **§4.2** — `formatted_print.py` predates the rest of this collection by several
    years; if it's touched again, it's a reasonable candidate for a light modernisation

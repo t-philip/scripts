@@ -107,9 +107,7 @@ not attempt.
 [docs/DESIGN_SPEC.md](docs/DESIGN_SPEC.md) explains why each tool works the way it
 does, one section per tool since they're unrelated, plus an honest verification status
 for each. Ping Monitor's non-root setup was live-tested end to end on a real systemd
-host; the rest was reasoned about and checked by hand, since there's no Windows
-fresh-install or VMware instance available to test those against from the machine
-that wrote it.
+host; the remaining tools were reviewed by hand, not run end to end.
 
 ---
 
