@@ -1,0 +1,52 @@
+name: Bug report
+description: A script doesn't work, or a guide has a mistake in it
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This repository is a collection of unrelated tools and guides, so please say
+        which one you're reporting on — it's the first thing needed to make sense of
+        the report.
+
+        These scripts were written for one person's setup and generalised afterwards,
+        so environment differences are a likely cause. Details help.
+
+  - type: dropdown
+    id: which
+    attributes:
+      label: Which script or guide?
+      options:
+        - Router outage monitor (ping monitoring + systemd)
+        - Windows app provisioning (winget)
+        - EVE-NG on VMware setup guide
+        - A Python utility
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens, and what did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Error output
+      description: For the ping monitor, `systemctl status` and `journalctl -u` output is the most useful.
+      render: shell
+    validations:
+      required: false
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: OS and version. For shell scripts, which shell. For Windows scripts, PowerShell version.
+      placeholder: Ubuntu 24.04 / bash 5.2, or Windows 11 / PowerShell 7.4
+    validations:
+      required: false

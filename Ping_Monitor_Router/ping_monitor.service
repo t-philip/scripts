@@ -1,0 +1,16 @@
+[Unit]
+Description=Router Restart Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pingmon
+ExecStart=/opt/ping_monitor/ping_monitor.sh
+Restart=on-failure
+RestartSec=30
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
