@@ -17,6 +17,7 @@ must offer those users the source of your modified version.
 | [`Ping_Monitor_Router/`](Ping_Monitor_Router/) | Monitors your router's LAN IP and two WAN targets, logging outages to CSV with duration and a probable-restart flag. Runs as a systemd service. | Linux |
 | [`WindowsOS_Install_Apps/`](WindowsOS_Install_Apps/) | Automated fresh-install app setup via `winget` — one PowerShell script to rebuild a Windows machine's software stack. | Windows |
 | [`network/eve-ng/`](network/eve-ng/) | Step-by-step guide to running EVE-NG network emulation on VMware Workstation. | VMware |
+| [`privacy-check/`](privacy-check/) | A heuristic check that fails a push whose added lines look like a description of one real installation, plus a tool that keeps every repository's copy in step. A starting point, not a guarantee. | Bash (Git Bash on Windows) |
 | [`python/`](python/) | `pdf_search.py` — search a PDF for lines matching text or a regex, with page numbers. `formatted_print.py` — an auto-aligning formatted print utility for tabular console output. | Python |
 
 ---
@@ -99,6 +100,12 @@ Pages that contain no extractable text — scans and image-only pages — are sk
 with a warning on stderr rather than failing the run. A PDF that is entirely scanned
 images will return no matches; that needs OCR, which this script deliberately does
 not attempt.
+
+---
+
+## Privacy Check
+
+[`privacy-check/`](privacy-check/) is the check this profile's repositories run before every push, shared here so the copies cannot drift apart. Read its [README](privacy-check/README.md) first: it explains what the check can and cannot do, and why a pass never means "safe to publish".
 
 ---
 

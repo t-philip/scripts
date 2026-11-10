@@ -18,9 +18,9 @@ make true). Relicensed from GPL-3.0 on 2026-08-06 — see §9.
 explains *why* each tool works the way it does, and states plainly what has and hasn't
 been verified for each one.
 
-### 0.1 Why this repo holds four unrelated things
+### 0.1 Why this repo holds five unrelated things
 
-Unlike this profile's other public repos, `scripts` is **not one project** — it's four
+Unlike this profile's other public repos, `scripts` is **not one project** — it's five
 independent tools that happen to share a licence and a support process. That shape
 itself needs explaining once: each was extracted from a single earlier `public` monorepo
 when the repositories were split up, and kept together here because none was substantial enough to justify its own
@@ -354,6 +354,27 @@ caused (`203/EXEC`), not by inspection. All test artifacts removed afterward.
 ---
 
 ## 9. Licence and provenance
+
+## 5. Privacy check (`privacy-check/`)
+
+### 5.1 Purpose and scope
+
+A shell script that reads the lines a push *adds* and fails when they look like a description of one real installation (a real-looking date in prose, a private address, a relative or a trade, a quoted phrase that may be a copied note, a test date outside the "fiction window"). It exists because tests, comments and documentation written next to real data tend to describe that data, and an ordinary secret scanner does not look for that.
+
+### 5.2 Design decisions
+
+- **It checks the diff, not the tree.** A large suite has many legitimate synthetic values; flagging them all gets the check switched off.
+- **It never claims safety.** A pass means no known pattern was found; the semantic read of the diff by someone with no memory of writing it stays required, and the script says so on every run.
+- **Private vocabulary stays out of the repository** (an untracked file), because a tracked list of private names would publish them.
+- **The two years that describe the author's own data are settings** (`.privacy-config`), so others can use their own.
+- **One canonical copy, vendored into each repository.** The hook must work offline and CI needs the file in the checkout; `sync.sh` reports drift and overwrites stale copies, and never commits.
+- **A visible opt-out for interface text.** A trailing `# ui-text` comment skips the quoted-phrase and free-text rules for a line; every use is printed on every run.
+
+### 5.3 Verification status
+
+`privacy-check/test.sh` runs 20 cases, one or more per rule, including the settings, the opt-out and a bad setting value; all pass on the author's machine under Git Bash. The drift check was run read-only across sibling repositories. The rules are heuristics tuned from one person's mistakes: English-phrased, bash and grep only, and they will miss leaks they were not taught.
+
+---
 
 Published under **AGPL-3.0** alongside the code it describes.
 

@@ -1,14 +1,11 @@
 name: Privacy check
 
-# Server-side backstop for docs/PRIVACY.md, in the same spirit as
-# check-version.yml: the pre-push hook is the thing that actually prevents a
-# leak, but a hook lives in .git/hooks, so it is absent on a fresh clone and
-# skipped entirely by `git push --no-verify`. This runs regardless.
+# Server-side backstop for docs/PRIVACY.md. The pre-push hook is what actually prevents
+# a leak, but a hook is absent on a fresh clone and skipped entirely by
+# `git push --no-verify`. This runs regardless.
 #
-# It cannot un-publish anything -- by the time it runs, the commit is on
-# GitHub. What it buys is finding out in minutes rather than never, which for
-# the two leaks that prompted this would have meant catching them the same
-# day instead of after they had shipped in a release.
+# It cannot un-publish anything -- by the time it runs, the commit is on GitHub.
+# What it buys is finding out in minutes rather than never.
 
 on:
   push:
