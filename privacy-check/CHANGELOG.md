@@ -1,5 +1,10 @@
 # privacy-check changelog
 
+## 1.0.1
+
+- CI: a `privacy-check-tests` workflow runs `test.sh` and `sync.sh --check` whenever the check, its tests,
+  its templates or the workflow change, so a rule cannot stop working unnoticed.
+
 ## 1.0.0
 
 First shared release, merged from the copies that had drifted apart in separate repositories.
