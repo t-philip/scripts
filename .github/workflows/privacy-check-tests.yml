@@ -1,0 +1,41 @@
+name: Privacy check tests
+
+# Tests the shared privacy check itself, not the files in this repository (that is
+# check-privacy.yml). Runs only when the check, its tests, its templates or this
+# workflow change, so an unrelated commit does not pay for it.
+#
+# Two steps:
+#   1. test.sh -- one case per rule; fails if a rule stops flagging what it should
+#      (or starts flagging what it should not).
+#   2. sync.sh --check -- this repository's own copies of the check, hook and
+#      workflow must match the canonical files, so a change to the canonical files
+#      cannot land without the copy that guards this repository.
+
+on:
+  push:
+    paths:
+      - "privacy-check/**"
+      - "scripts/check_privacy.sh"
+      - ".githooks/pre-push"
+      - ".github/workflows/privacy-check-tests.yml"
+  pull_request:
+    paths:
+      - "privacy-check/**"
+      - "scripts/check_privacy.sh"
+      - ".githooks/pre-push"
+      - ".github/workflows/privacy-check-tests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Run the rule tests
+        run: bash privacy-check/test.sh
+
+      - name: This repository's copies match the canonical files
+        run: bash privacy-check/sync.sh --check "$PWD"
